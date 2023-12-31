@@ -6,6 +6,7 @@ import { Product } from '../models/product.model';
 import { Brand } from 'src/brands/models/brand.model';
 import { Category } from 'src/categories/models/category.model';
 import { Image } from 'src/images/models/image.model';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class ProductsService {
@@ -25,7 +26,41 @@ export class ProductsService {
     return createdProduct;
   }
 
-  async findAll() {
+  async findAll(searchParams?: {
+    name?: string;
+    category?: string;
+    brand?: string;
+    minPrice?: number;
+    maxPrice?: number;
+  }) {
+    const whereClause: any = {};
+
+    if (searchParams?.name) {
+      whereClause.name = searchParams.name;
+    }
+
+    if (searchParams?.category) {
+      whereClause['$categories.name$'] = searchParams.category;
+    }
+
+    if (searchParams?.brand) {
+      whereClause['$brand.name$'] = searchParams.brand;
+    }
+
+    if (searchParams?.minPrice) {
+      whereClause.price = {
+        ...(whereClause.price || {}),
+        [Op.gte]: searchParams.minPrice,
+      };
+    }
+
+    if (searchParams?.maxPrice) {
+      whereClause.price = {
+        ...(whereClause.price || {}),
+        [Op.lte]: searchParams.maxPrice,
+      };
+    }
+
     return await this.productModel.findAll({
       include: [
         {
@@ -43,6 +78,7 @@ export class ProductsService {
         },
       ],
       attributes: { exclude: ['brand_id'] },
+      where: whereClause,
     });
   }
 

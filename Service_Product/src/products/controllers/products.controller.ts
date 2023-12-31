@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
 import { CreateProductDto } from '../dto/create-product.dto';
@@ -22,8 +23,20 @@ export class ProductsController {
   }
 
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  findAll(
+    @Query('name') name?: string,
+    @Query('category') category?: string,
+    @Query('brand') brand?: string,
+    @Query('maxPrice') maxPrice?: number,
+    @Query('minPrice') minPrice?: number,
+  ) {
+    return this.productsService.findAll({
+      name,
+      category,
+      brand,
+      maxPrice,
+      minPrice,
+    });
   }
 
   @Get(':id')
