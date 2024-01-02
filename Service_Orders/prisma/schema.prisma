@@ -12,27 +12,34 @@ datasource db {
 }
  
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String
-  commandes Commande[]
+  id       Int       @id @default(autoincrement())
+  email    String    @unique
+  name     String
+  commandes Orderitem[]
 }
 
 model Produit {
-  id Int @id @default(autoincrement())
-  name String
-  prix Int 
-  commandes Commande[]
+  id        Int         @id @default(autoincrement())
+  name      String
+  prix      Int 
+  commandes Orderitem[]
 }
 
-model Commande {
-  id Int @id @default(autoincrement())
-  quantite Int
-  status Status
-  userId   Int      
-  user     User     @relation(fields: [userId], references: [id])
-  produit  Produit  @relation(fields: [produitId], references: [id])
+model Orderitem {
+  id        Int       @id @default(autoincrement())
+  status    Status
+  userId    Int      
+  quantity  Int
+  user      User      @relation(fields: [userId], references: [id])
+  produit   Produit   @relation(fields: [produitId], references: [id])
+  order     Order     @relation(fields: [orderId], references: [id])
   produitId Int
+  orderId   Int
+}
+
+model Order {
+  id        Int       @id @default(autoincrement())
+  orderitems  Orderitem[]
 }
 
 enum Status {
