@@ -3,9 +3,9 @@ import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Product } from '../models/product.model';
-import { Brand } from 'src/brands/models/brand.model';
-import { Category } from 'src/categories/models/category.model';
-import { Image } from 'src/images/models/image.model';
+import { Brand } from '../../brands/models/brand.model';
+import { Category } from '../../categories/models/category.model';
+import { Image } from '../../images/models/image.model';
 import { Op } from 'sequelize';
 
 @Injectable()

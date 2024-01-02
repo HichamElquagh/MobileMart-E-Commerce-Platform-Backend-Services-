@@ -12,10 +12,10 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
-import { Brand } from 'src/brands/models/brand.model';
-import { Category } from 'src/categories/models/category.model';
+import { Brand } from '../../brands/models/brand.model';
+import { Category } from '../../categories/models/category.model';
 import { ProductCategory } from './productCategory.model';
-import { Image } from 'src/images/models/image.model';
+import { Image } from '../../images/models/image.model';
 
 @Table
 export class Product extends Model {

@@ -9,8 +9,8 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
-import { Product } from 'src/products/models/product.model';
-import { ProductCategory } from 'src/products/models/productCategory.model';
+import { Product } from '../../products/models/product.model';
+import { ProductCategory } from '../../products/models/productCategory.model';
 
 @Table
 export class Category extends Model {
