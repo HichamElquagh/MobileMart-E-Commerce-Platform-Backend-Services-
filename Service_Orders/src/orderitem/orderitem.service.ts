@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateOrderitemDto } from './dto/create-orderitem.dto';
+import { UpdateOrderitemDto } from './dto/update-orderitem.dto';
 
 @Injectable()
 export class OrderitemService {
@@ -37,7 +38,7 @@ export class OrderitemService {
     return {message :'created',createdOrderitem};
   }
 
-  findAll() {
+  async findAll() {
     return this.databaseservise.orderitem.findMany({
       include : {
         produit : true, 
@@ -46,16 +47,31 @@ export class OrderitemService {
     })
   }
 
-  findOne(id: number) {
+   async findOne(id: number) {
     return this.databaseservise.orderitem.findUnique({
       where:{
         id,
+      },
+      include : {
+        produit : true, 
+        user : true
       }
     })
   }
 
-  update(id: number, updateOrderitemDto: Prisma.OrderUpdateInput) {
-    return `This action updates a #${id} orderitem`;
+  async update(id: number, updateOrderitemDto: UpdateOrderitemDto) {
+    const updatedOrderitem = await this.databaseservise.orderitem.update({
+      where: { 
+        id,
+       },
+      data:updateOrderitemDto,
+      include: {
+        produit: true,
+        user: true,
+      },
+    });
+
+    return { message: 'updated', updatedOrderitem };
   }
 
   remove(id: number) {
