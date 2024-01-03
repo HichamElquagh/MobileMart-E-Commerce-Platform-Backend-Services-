@@ -34,4 +34,9 @@ export class OrderitemController {
   remove(@Param('id') id: string) {
     return this.orderitemService.remove(+id);
   }
+
+  @Get('user/:userId')
+  findUserOrders(@Param('userId') userId: string){
+    return this.orderitemService.findUserOrders(+userId);
+  }
 }

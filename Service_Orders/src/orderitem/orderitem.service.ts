@@ -59,6 +59,24 @@ export class OrderitemService {
     })
   }
 
+   async findUserOrders(userId: number) {
+    const userExists = await this.databaseservise.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      throw new NotFoundException('User not found');
+    }
+
+    return this.databaseservise.orderitem.findMany({
+      where: { userId },
+      include: {
+        produit: true,
+        user: true,
+      },
+    });
+  }
+
   async update(id: number, updateOrderitemDto: UpdateOrderitemDto) {
     const updatedOrderitem = await this.databaseservise.orderitem.update({
       where: { 
@@ -74,7 +92,15 @@ export class OrderitemService {
     return { message: 'updated', updatedOrderitem };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} orderitem`;
+  async remove(id: number) {
+    const deletedOrderitem = await this.databaseservise.orderitem.delete({
+      where: { id },
+      include: {
+        produit: true,
+        user: true,
+      },
+    });
+
+    return { message: 'deleted', deletedOrderitem };
   }
 }
