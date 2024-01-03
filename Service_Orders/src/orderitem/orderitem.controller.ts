@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { OrderitemService } from './orderitem.service';
+import { Prisma } from '@prisma/client';
 import { CreateOrderitemDto } from './dto/create-orderitem.dto';
-import { UpdateOrderitemDto } from './dto/update-orderitem.dto';
+
 
 @Controller('orderitem')
 export class OrderitemController {
@@ -9,6 +10,7 @@ export class OrderitemController {
 
   @Post()
   create(@Body() createOrderitemDto: CreateOrderitemDto) {
+    // console.log(createOrderitemDto);
     return this.orderitemService.create(createOrderitemDto);
   }
 
@@ -23,7 +25,7 @@ export class OrderitemController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderitemDto: UpdateOrderitemDto) {
+  update(@Param('id') id: string, @Body() updateOrderitemDto: Prisma.OrderUpdateInput) {
     return this.orderitemService.update(+id, updateOrderitemDto);
   }
 
