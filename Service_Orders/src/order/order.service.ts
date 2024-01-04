@@ -28,7 +28,16 @@ export class OrderService {
   }
 
   findAll() {
-    return `This action returns all order`;
+    return this.databaseservice.order.findMany({
+      include : {
+        orderitem : {
+          include : {
+            produit : true, 
+            user : true
+          }
+        }, 
+      }
+    })
   }
 
   findOne(id: number) {
