@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { OrderitemService } from './orderitem.service';
-import { Prisma } from '@prisma/client';
 import { CreateOrderitemDto } from './dto/create-orderitem.dto';
 import { UpdateOrderitemDto } from './dto/update-orderitem.dto';
 

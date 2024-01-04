@@ -30,20 +30,20 @@ model Orderitem {
     userId    Int      
     quantity  Int
     produitId Int
-    orderId   Int?
     user      User      @relation(fields: [userId], references: [id])
     produit   Produit   @relation(fields: [produitId], references: [id])
-    order     Order?    @relation(fields: [orderId], references: [id])
+    order Order[]
 }
 
 model Order {
   id        Int       @id @default(autoincrement())
-  status    Status
-  orderitems  Orderitem[]
+  status    Status 
+  orderId   Int
+  orderitem     Orderitem    @relation(fields: [orderId], references: [id])
 }
 
 enum Status {
   TRAITEE 
-  EN_COURS_DE_TRAITEMENT
+  ENCOURS
   EXPEDIEE
 }
