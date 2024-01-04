@@ -22,12 +22,20 @@ export class OrderService {
     
     const createdOrderitem = await this.databaseservice.order.create({
       data: createOrderDto,
+      include : {
+        orderitem : {
+          include : {
+            produit : true, 
+            user : true
+          }
+        }, 
+      }
     });
 
     return {message :'created',createdOrderitem};
   }
 
-  findAll() {
+  async findAll() {
     return this.databaseservice.order.findMany({
       include : {
         orderitem : {
@@ -40,12 +48,39 @@ export class OrderService {
     })
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(id: number) {
+    return this.databaseservice.order.findUnique({
+      where:{
+        id,
+      },
+      include : {
+        orderitem : {
+          include : {
+            produit : true, 
+            user : true
+          }
+        }, 
+      }
+    })
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async update(id: number, updateOrderDto: UpdateOrderDto) {
+    const updatedOrder = await this.databaseservice.order.update({
+      where: { 
+        id,
+       },
+      data:updateOrderDto,
+      include : {
+        orderitem : {
+          include : {
+            produit : true, 
+            user : true
+          }
+        }, 
+      }
+    });
+
+    return { message: 'updated', updatedOrder };
   }
 
   remove(id: number) {
