@@ -83,7 +83,19 @@ export class OrderService {
     return { message: 'updated', updatedOrder };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async remove(id: number) {
+    const deletedOrder = await this.databaseservice.order.delete({
+      where: { id },
+      include : {
+        orderitem : {
+          include : {
+            produit : true, 
+            user : true
+          }
+        }, 
+      }
+    });
+
+    return { message: 'deleted', deletedOrder };
   }
 }
