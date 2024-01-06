@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentsService = void 0;
 const common_1 = require("@nestjs/common");
 const { PrismaClient } = require('@prisma/client');
+const axios_1 = require("axios");
 const stripe = require('stripe')('sk_test_51ORcLoAhVZrvalPmoN7zx0aZUyLfXBc9O1EFhyycunDQZfAzBARYPOC3Kat8cDTtOgfcS83QbHxC0zcLsVByXZBg00C5Bvr6SV');
 let PaymentsService = class PaymentsService {
     async StripeprocessPayment(orderId, paymentData) {
@@ -28,40 +29,17 @@ let PaymentsService = class PaymentsService {
             if (!order) {
                 throw new common_1.NotFoundException(`Order with id ${orderId} not found.`);
             }
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount: Math.round(order.total * 100),
-                currency: 'usd',
-                payment_method: 'pm_card_visa',
-                confirm: true,
-                return_url: 'https://your-website.com/success',
-                metadata: {
-                    orderId: order.id.toString(),
-                    customerName: order.customer.name,
-                    productName: order.OrderItem.product.name,
-                },
+            const paymentMethod = await stripe.paymentMethods.create({
+                type: paymentData.type,
+                card: paymentData.card,
             });
-            if (paymentIntent.status === 'succeeded') {
-                const payment = await prisma.payment.create({
-                    data: {
-                        orderId: order.id,
-                        amount: order.total,
-                        currency: 'usd',
-                        method: 'stripe',
-                        status: paymentIntent.status,
-                        createdAt: new Date(),
-                    },
-                });
-                return payment;
-            }
-            else {
-                throw new Error(`Payment failed with status: ${paymentIntent.status}`);
-            }
+            return { paymentMethod };
         }
         catch (error) {
             return error.message;
         }
     }
-    async PaypalprocessPayment(orderId, paymentData) {
+    async PaypalprocessPayment(orderId, token) {
         try {
             const prisma = new PrismaClient();
             const order = await prisma.order.findUnique({
@@ -78,7 +56,48 @@ let PaymentsService = class PaymentsService {
             if (!order) {
                 throw new common_1.NotFoundException(`Order with id ${orderId} not found.`);
             }
-            return { order };
+            else {
+                console.log(order);
+                console.log(order.total.toFixed(2));
+                const paypalOrder = await axios_1.default.post("https://api-m.sandbox.paypal.com/v2/checkout/orders", {
+                    "intent": "CAPTURE",
+                    "purchase_units": [
+                        {
+                            "items": [
+                                {
+                                    "name": order.OrderItem.product.name,
+                                    "description": order.OrderItem.product.description,
+                                    "quantity": order.OrderItem.quantity.toString(),
+                                    "unit_amount": {
+                                        "currency_code": "USD",
+                                        "value": order.OrderItem.price.toString()
+                                    }
+                                }
+                            ],
+                            "amount": {
+                                "currency_code": "USD",
+                                "value": order.total.toString(),
+                                "breakdown": {
+                                    "item_total": {
+                                        "currency_code": "USD",
+                                        "value": order.total.toString()
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "application_context": {
+                        "return_url": "https://example.com/return",
+                        "cancel_url": "https://example.com/cancel"
+                    }
+                }, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token.bearer_token}`,
+                    },
+                });
+                return paypalOrder.data;
+            }
         }
         catch (error) {
             return error.message;

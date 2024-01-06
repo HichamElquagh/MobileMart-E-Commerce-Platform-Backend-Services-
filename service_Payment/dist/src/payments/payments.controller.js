@@ -22,16 +22,15 @@ let PaymentsController = class PaymentsController {
     }
     async StripeprocessPayment(orderId, paymantdata) {
         const payment = await this.paymentsService.StripeprocessPayment(orderId, paymantdata);
-        return { payment };
     }
-    async PaypalprocessPayment(orderId, paymantdata) {
-        const payment = await this.paymentsService.PaypalprocessPayment(orderId, paymantdata);
+    async PaypalprocessPayment(orderId, token) {
+        const payment = await this.paymentsService.PaypalprocessPayment(orderId, token);
         return { payment };
     }
 };
 exports.PaymentsController = PaymentsController;
 __decorate([
-    (0, common_1.Post)('/Stripe/:orderId'),
+    (0, common_1.Post)('Stripe/:orderId'),
     __param(0, (0, common_1.Param)('orderId', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -43,7 +42,7 @@ __decorate([
     __param(0, (0, common_1.Param)('orderId', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, create_payment_dto_1.CreatePaymentDto]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentsController.prototype, "PaypalprocessPayment", null);
 exports.PaymentsController = PaymentsController = __decorate([
