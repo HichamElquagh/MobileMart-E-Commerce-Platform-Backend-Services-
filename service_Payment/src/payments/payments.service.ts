@@ -141,8 +141,8 @@ export class PaymentsService {
                 }
             ],
             "application_context": {
-                "return_url": "https://example.com/return",
-                "cancel_url": "https://example.com/cancel"
+              "return_url": `https://localhost:3000/Payments/Paypal/Confirm_Payment/:${order.id}?token=${token.bearer_token}`,
+                              "cancel_url": "https://example.com/cancel"
             }
           },
           {
@@ -152,7 +152,15 @@ export class PaymentsService {
             },
           }
         );
-
+        if (paypalOrder.data.status === 'CREATED') {
+         const orderUpdate = await prisma.order.update({
+            where: { id: orderId },
+            data: {
+              paypalOrderId: paypalOrder.data.id,
+            },
+          });
+          
+        }
         return paypalOrder.data;
       }
 
@@ -176,4 +184,62 @@ export class PaymentsService {
       return error.message;
     }
   }
+  async ConfirmPaypalprocessPayment(orderId : number , token: { bearer_token: string }) { 
+
+    try {
+      const prisma = new PrismaClient();
+      // Retrieve order from the database
+
+      const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          customer: true,
+          OrderItem: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      });
+      if (!order) {
+        throw new NotFoundException(`Order with id ${orderId} not found.`);
+      }else{
+        console.log(order);
+        // return
+        console.log(order.total.toFixed(2));
+        // return
+
+
+      }
+      const captureResponse = await axios.post(
+        `https://api-m.sandbox.paypal.com/v2/checkout/orders/${order.paypalOrderId}/capture`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token.bearer_token}`,
+          },
+        }
+      );  
+      // Insert into the payment table
+
+      const payment = await prisma.payment.create({
+        data: {
+          orderId: order.id,
+          amount: order.total,
+          currency: 'USD',
+          method: 'paypal',
+          status: captureResponse.data.status,
+          createdAt: new Date(),
+        },
+      });
+      return payment;   
+
+    } catch (error) {
+
+      return error.message;
+    }
+
+
+}
 }

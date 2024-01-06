@@ -4,4 +4,7 @@ export declare class PaymentsService {
     PaypalprocessPayment(orderId: number, token: {
         bearer_token: string;
     }): Promise<any>;
+    ConfirmPaypalprocessPayment(orderId: number, token: {
+        bearer_token: string;
+    }): Promise<any>;
 }

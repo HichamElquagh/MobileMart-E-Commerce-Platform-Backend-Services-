@@ -49,6 +49,7 @@ model Order {
   total       Float
   payment     Payment?
   status      String
+  paypalOrderId  String?
   createdAt   DateTime  @default(now())
   
 }
@@ -61,5 +62,6 @@ model Payment {
   currency    String
   method      String
   status      String
+  paypalOrId  String
   createdAt   DateTime  @default(now())
 }

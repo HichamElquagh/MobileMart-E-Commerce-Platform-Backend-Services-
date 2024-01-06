@@ -87,7 +87,7 @@ let PaymentsService = class PaymentsService {
                         }
                     ],
                     "application_context": {
-                        "return_url": "https://example.com/return",
+                        "return_url": `https://localhost:3000/Payments/Paypal/Confirm_Payment/:${order.id}?token=${token.bearer_token}`,
                         "cancel_url": "https://example.com/cancel"
                     }
                 }, {
@@ -96,8 +96,59 @@ let PaymentsService = class PaymentsService {
                         Authorization: `Bearer ${token.bearer_token}`,
                     },
                 });
+                if (paypalOrder.data.status === 'CREATED') {
+                    const orderUpdate = await prisma.order.update({
+                        where: { id: orderId },
+                        data: {
+                            paypalOrderId: paypalOrder.data.id,
+                        },
+                    });
+                }
                 return paypalOrder.data;
             }
+        }
+        catch (error) {
+            return error.message;
+        }
+    }
+    async ConfirmPaypalprocessPayment(orderId, token) {
+        try {
+            const prisma = new PrismaClient();
+            const order = await prisma.order.findUnique({
+                where: { id: orderId },
+                include: {
+                    customer: true,
+                    OrderItem: {
+                        include: {
+                            product: true,
+                        },
+                    },
+                },
+            });
+            if (!order) {
+                throw new common_1.NotFoundException(`Order with id ${orderId} not found.`);
+            }
+            else {
+                console.log(order);
+                console.log(order.total.toFixed(2));
+            }
+            const captureResponse = await axios_1.default.post(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${order.paypalOrderId}/capture`, {}, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token.bearer_token}`,
+                },
+            });
+            const payment = await prisma.payment.create({
+                data: {
+                    orderId: order.id,
+                    amount: order.total,
+                    currency: 'USD',
+                    method: 'paypal',
+                    status: captureResponse.data.status,
+                    createdAt: new Date(),
+                },
+            });
+            return payment;
         }
         catch (error) {
             return error.message;

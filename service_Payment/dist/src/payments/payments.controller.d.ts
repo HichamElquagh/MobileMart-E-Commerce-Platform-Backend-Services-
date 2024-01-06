@@ -9,4 +9,7 @@ export declare class PaymentsController {
     }): Promise<{
         payment: any;
     }>;
+    ConfirmPaypalprocessPayment(orderId: number, request: Request): Promise<{
+        payment: any;
+    }>;
 }

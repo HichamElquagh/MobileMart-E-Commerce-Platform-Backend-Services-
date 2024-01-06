@@ -35,6 +35,7 @@ CREATE TABLE "Order" (
     "OrderItemId" INTEGER NOT NULL,
     "total" DOUBLE PRECISION NOT NULL,
     "status" TEXT NOT NULL,
+    "paypalOrderId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
@@ -48,6 +49,7 @@ CREATE TABLE "Payment" (
     "currency" TEXT NOT NULL,
     "method" TEXT NOT NULL,
     "status" TEXT NOT NULL,
+    "paypalOrId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
