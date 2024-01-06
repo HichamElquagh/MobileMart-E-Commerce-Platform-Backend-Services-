@@ -87,7 +87,7 @@ let PaymentsService = class PaymentsService {
                         }
                     ],
                     "application_context": {
-                        "return_url": `https://localhost:3000/Payments/Paypal/Confirm_Payment/:${order.id}?token=${token.bearer_token}`,
+                        "return_url": `https://localhost:3000/Payments/Paypal/Confirm_Payment/:${order.id}?ttoken=${token.bearer_token}`,
                         "cancel_url": "https://example.com/cancel"
                     }
                 }, {
@@ -112,6 +112,7 @@ let PaymentsService = class PaymentsService {
         }
     }
     async ConfirmPaypalprocessPayment(orderId, token) {
+        console.log("ddddddddddddddd");
         try {
             const prisma = new PrismaClient();
             const order = await prisma.order.findUnique({
@@ -138,6 +139,7 @@ let PaymentsService = class PaymentsService {
                     Authorization: `Bearer ${token.bearer_token}`,
                 },
             });
+            console.log(captureResponse.data);
             const payment = await prisma.payment.create({
                 data: {
                     orderId: order.id,
@@ -148,7 +150,8 @@ let PaymentsService = class PaymentsService {
                     createdAt: new Date(),
                 },
             });
-            return payment;
+            console.log(payment);
+            payment;
         }
         catch (error) {
             return error.message;

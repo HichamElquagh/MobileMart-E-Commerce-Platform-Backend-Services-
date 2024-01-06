@@ -141,8 +141,8 @@ export class PaymentsService {
                 }
             ],
             "application_context": {
-              "return_url": `https://localhost:3000/Payments/Paypal/Confirm_Payment/:${order.id}?token=${token.bearer_token}`,
-                              "cancel_url": "https://example.com/cancel"
+              "return_url": `https://localhost:3000/Payments/Paypal/Confirm_Payment/:${order.id}?ttoken=${token.bearer_token}`,
+              "cancel_url": "https://example.com/cancel"
             }
           },
           {
@@ -184,8 +184,9 @@ export class PaymentsService {
       return error.message;
     }
   }
-  async ConfirmPaypalprocessPayment(orderId : number , token: { bearer_token: string }) { 
-
+  async ConfirmPaypalprocessPayment(orderId : number , token : { bearer_token: string }) { 
+  console.log("ddddddddddddddd");
+  
     try {
       const prisma = new PrismaClient();
       // Retrieve order from the database
@@ -221,6 +222,8 @@ export class PaymentsService {
           },
         }
       );  
+      console.log(captureResponse.data);
+      
       // Insert into the payment table
 
       const payment = await prisma.payment.create({
@@ -233,7 +236,8 @@ export class PaymentsService {
           createdAt: new Date(),
         },
       });
-      return payment;   
+      console.log(payment);
+       payment;   
 
     } catch (error) {
 

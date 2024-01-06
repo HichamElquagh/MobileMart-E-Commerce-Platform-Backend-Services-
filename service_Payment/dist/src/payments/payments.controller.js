@@ -28,8 +28,8 @@ let PaymentsController = class PaymentsController {
         return { payment };
     }
     async ConfirmPaypalprocessPayment(orderId, request) {
-        const token = request.query.token;
-        const payment = await this.paymentsService.ConfirmPaypalprocessPayment(orderId, { bearer_token: token });
+        const token = { bearer_token: request.query.ttoken };
+        const payment = await this.paymentsService.ConfirmPaypalprocessPayment(orderId, token);
         return { payment };
     }
 };
@@ -51,11 +51,11 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PaymentsController.prototype, "PaypalprocessPayment", null);
 __decorate([
-    (0, common_1.Post)('Paypal/Confirm_Payment/:orderId'),
+    (0, common_1.Get)('Paypal/Confirm_Payment/:orderId'),
     __param(0, (0, common_1.Param)('orderId', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Request]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentsController.prototype, "ConfirmPaypalprocessPayment", null);
 exports.PaymentsController = PaymentsController = __decorate([

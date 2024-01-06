@@ -1,5 +1,6 @@
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import { Request } from 'express';
 export declare class PaymentsController {
     private readonly paymentsService;
     constructor(paymentsService: PaymentsService);

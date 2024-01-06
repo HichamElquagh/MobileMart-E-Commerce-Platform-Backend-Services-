@@ -1,6 +1,7 @@
-import { Controller, Post,Req,Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post,Req,Body, Param, ParseIntPipe, Get } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import{Request} from 'express';
 
 @Controller('Payments')
 export class PaymentsController {
@@ -25,13 +26,13 @@ export class PaymentsController {
     return {payment};
   }
 
-  @Post('Paypal/Confirm_Payment/:orderId')
+  @Get('Paypal/Confirm_Payment/:orderId')
   async ConfirmPaypalprocessPayment(
     @Param('orderId', ParseIntPipe) orderId: number,
     @Req() request: Request,
   ) {
-    const token = request.query.token;
-    const payment = await this.paymentsService.ConfirmPaypalprocessPayment(orderId, { bearer_token: token });
+    const token = { bearer_token: request.query.ttoken as string };
+    const payment = await this.paymentsService.ConfirmPaypalprocessPayment(orderId, token); 
     return { payment };
   }
 }
