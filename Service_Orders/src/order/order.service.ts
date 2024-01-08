@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { log } from 'console';
 
 @Injectable()
 export class OrderService {
@@ -65,21 +66,30 @@ export class OrderService {
   }
 
   async update(id: number, updateOrderDto: UpdateOrderDto) {
-    const updatedOrder = await this.databaseservice.order.update({
-      where: { 
+    const existingOrder = await this.databaseservice.order.findUnique({
+      where: {
         id,
-       },
-      data:updateOrderDto,
-      include : {
-        orderitem : {
-          include : {
-            produit : true, 
-            user : true
-          }
-        }, 
-      }
+      },
     });
-
+  
+  
+    if (!existingOrder) {
+      throw new Error(`Order with id ${id} not found`);
+    }
+    const updatedOrder = await this.databaseservice.order.update({
+      where: {
+        id,
+      },
+      data: updateOrderDto,
+      include: {
+        orderitem: {
+          include: {
+            produit: true,
+            user: true,
+          },
+        },
+      },
+    });
     return { message: 'updated', updatedOrder };
   }
 
